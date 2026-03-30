@@ -1,0 +1,43 @@
+import db from "../database/database";
+import { pedidos } from "../models/Pedidos";
+
+export class PedidoRepository {
+
+  salvar(pedido: pedidos): pedidos {
+    const resultado = db
+      .prepare(`
+        INSERT INTO pedidos (id_cliente, valor_total, data_pedido, status)
+        VALUES (?, ?, ?, ?)
+      `)
+      .run(
+        pedido.id_cliente,
+        pedido.valor_total,
+        pedido.data_pedido,
+        pedido.status
+      );
+
+    return {
+      id: Number(resultado.lastInsertRowid),
+      id_cliente: pedido.id_cliente,
+      valor_total: pedido.valor_total,
+      data_pedido: pedido.data_pedido,
+      status: pedido.status
+    };
+  }
+
+  listar(): pedidos[] {
+    return db.prepare("SELECT * FROM pedidos").all() as pedidos[];
+  }
+
+  buscarPorId(id: number): pedidos | null {
+    return (db
+      .prepare("SELECT * FROM pedidos WHERE id = ?")
+      .get(id) as pedidos) ?? null;
+  }
+
+  buscarPorCliente(id_cliente: number): pedidos[] {
+    return db
+      .prepare("SELECT * FROM pedidos WHERE id_cliente = ?")
+      .all(id_cliente) as pedidos[];
+  }
+}
