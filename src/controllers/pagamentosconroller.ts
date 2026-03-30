@@ -1,5 +1,5 @@
 import { app } from "../server";
-import { PagamentoRepository } from "../repositories/pagamentorepository";
+import { PagamentoRepository } from "../repositories/pagamentosrepository";
 
 export function PagamentoController() {
   const repository = new PagamentoRepository();

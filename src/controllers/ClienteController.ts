@@ -72,7 +72,7 @@ export function ClienteController() {
       if (telefone !== undefined && telefone.trim().length === 0) throw new Error("Telefone não pode ser vazio");
       if (senha !== undefined && senha.trim().length < 6) throw new Error("Senha deve ter no mínimo 6 caracteres");
 
-      const atualizado = repository.atualizar(id, {
+      const atualizado = repository.atualizar (id, {
         nome: nome?.trim() ?? existente.nome,
         email: email?.trim() ?? existente.email,
         telefone: telefone?.trim() ?? existente.telefone,

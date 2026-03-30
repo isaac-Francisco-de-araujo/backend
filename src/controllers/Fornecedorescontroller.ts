@@ -1,5 +1,5 @@
 import { app } from "../server";
-import { FornecedorRepository } from "../repositories/fornecedorrepository";
+import { FornecedorRepository } from "../repositories/fornecedoresrepository";
 
 export function FornecedorController() {
   const repository = new FornecedorRepository();

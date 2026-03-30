@@ -1,5 +1,6 @@
 import { app } from "../server";
 import { CategoriasRepository } from "../repositories/categoriasrepository";
+import db from "../database/database";
 
 export function CategoriasController() {
   const repository = new CategoriasRepository();

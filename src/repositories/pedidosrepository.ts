@@ -1,5 +1,5 @@
 import db from "../database/database";
-import { pedidos } from "../models/Pedidos";
+import { pedidos } from "../models/pedidos";
 
 export class PedidoRepository {
 
@@ -40,4 +40,24 @@ export class PedidoRepository {
       .prepare("SELECT * FROM pedidos WHERE id_cliente = ?")
       .all(id_cliente) as pedidos[];
   }
+   atualizar(id: number, dados: pedidos): pedidos {
+  db.prepare(`
+    UPDATE pedidos
+    SET id_cliente = ?, valor_total = ?, data_pedido = ?, status = ?,
+    WHERE id = ?
+  `).run(dados.id_cliente, dados.valor_total, dados.data_pedido, dados.status, id);
+
+  return { id, ...dados };
+}
+
+deletar(id: number): void {
+  db.prepare("DELETE FROM pedidos WHERE id = ?").run(id);
+}
+atualizarstatus(id: number, dados: pedidos): pedidos {
+ db.prepare(`
+    UPDATE pedidos
+    SET status,
+    WHERE id = ?
+  `).run(dados.status)
+}
 }

@@ -39,4 +39,18 @@ export class ClienteRepository {
   buscarPorNome(nome: string): cliente | null {
     return (db.prepare("SELECT * FROM clientes WHERE nome LIKE ?").get(`%${nome}%`) as cliente) ?? null;
   }
+   atualizar(id: number, dados: cliente): cliente {
+  db.prepare(`
+    UPDATE cliente
+    SET nome = ?, email = ?, telefone = ?, senha = ?, data_nacimento = ?, data_cadastro = ?,
+    WHERE id = ?
+  `).run(dados.nome, dados.email, dados.telefone, dados.senha, dados.data_nascimento, dados.data_cadastro, id);
+
+  return { id, ...dados };
 }
+
+deletar(id: number): void {
+  db.prepare("DELETE FROM clientes WHERE id = ?").run(id);
+}
+}
+
