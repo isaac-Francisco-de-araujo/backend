@@ -1,0 +1,433 @@
+-- =========================
+-- TABELA CLIENTES
+-- =========================
+CREATE TABLE clientes (
+    id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL CHECK(nome <> ''),
+    email TEXT UNIQUE NOT NULL CHECK(email LIKE '%@%'),
+    telefone TEXT,
+    senha TEXT NOT NULL CHECK(length(senha) >= 6),
+    data_nascimento DATE,
+    data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_clientes_email ON clientes(email);
+CREATE INDEX idx_clientes_nome ON clientes(nome);
+
+
+-- =========================
+-- CATEGORIAS
+-- =========================
+CREATE TABLE categorias (
+    id_categoria INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL CHECK(nome <> ''),
+    descricao TEXT
+);
+
+CREATE INDEX idx_categorias_nome ON categorias(nome);
+
+
+-- =========================
+-- FORNECEDORES
+-- =========================
+CREATE TABLE fornecedores (
+    id_fornecedor INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_empresa TEXT NOT NULL CHECK(nome_empresa <> ''),
+    cnpj TEXT CHECK(length(cnpj) = 14),
+    telefone TEXT,
+    email TEXT CHECK(email LIKE '%@%')
+);
+
+CREATE INDEX idx_fornecedores_nome ON fornecedores(nome_empresa);
+CREATE INDEX idx_fornecedores_cnpj ON fornecedores(cnpj);
+
+
+-- =========================
+-- PRODUTOS
+-- =========================
+CREATE TABLE produtos (
+    id_produto INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL CHECK(nome <> ''),
+    descricao TEXT,
+    id_categoria INTEGER,
+    id_fornecedor INTEGER,
+    preco REAL NOT NULL CHECK(preco > 0),
+    custo REAL CHECK(custo >= 0),
+    ativo INTEGER DEFAULT 1 CHECK(ativo IN (0,1)),
+
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria),
+    FOREIGN KEY (id_fornecedor) REFERENCES fornecedores(id_fornecedor)
+);
+
+CREATE INDEX idx_produtos_nome ON produtos(nome);
+CREATE INDEX idx_produtos_categoria ON produtos(id_categoria);
+CREATE INDEX idx_produtos_fornecedor ON produtos(id_fornecedor);
+
+
+-- =========================
+-- ESTOQUE
+-- =========================
+CREATE TABLE estoque (
+    id_estoque INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_produto INTEGER,
+    tamanho TEXT NOT NULL CHECK(tamanho <> ''),
+    cor TEXT NOT NULL CHECK(cor <> ''),
+    quantidade INTEGER NOT NULL DEFAULT 0 CHECK(quantidade >= 0),
+
+    FOREIGN KEY (id_produto) REFERENCES produtos(id_produto)
+);
+
+CREATE INDEX idx_estoque_produto ON estoque(id_produto);
+CREATE INDEX idx_estoque_quantidade ON estoque(quantidade);
+
+
+-- =========================
+-- PEDIDOS
+-- =========================
+CREATE TABLE pedidos (
+    id_pedido INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_cliente INTEGER,
+    data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status TEXT NOT NULL CHECK(status IN ('Pago','Enviado','Processando','Cancelado','Entregue','Retirada')),
+    valor_total REAL NOT NULL CHECK(valor_total >= 0),
+
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+);
+
+CREATE INDEX idx_pedidos_cliente ON pedidos(id_cliente);
+CREATE INDEX idx_pedidos_status ON pedidos(status);
+
+
+-- =========================
+-- ITENS PEDIDO
+-- =========================
+CREATE TABLE itens_pedido (
+    id_item INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_pedido INTEGER,
+    id_produto INTEGER,
+    tamanho TEXT NOT NULL CHECK(tamanho <> ''),
+    cor TEXT NOT NULL CHECK(cor <> ''),
+    quantidade INTEGER NOT NULL CHECK(quantidade > 0),
+    preco_unitario REAL CHECK(preco_unitario > 0),
+
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
+    FOREIGN KEY (id_produto) REFERENCES produtos(id_produto)
+);
+
+CREATE INDEX idx_itens_pedido_pedido ON itens_pedido(id_pedido);
+CREATE INDEX idx_itens_pedido_produto ON itens_pedido(id_produto);
+
+
+-- =========================
+-- PAGAMENTOS
+-- =========================
+CREATE TABLE pagamentos (
+    id_pagamento INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_pedido INTEGER,
+    metodo_pagamento TEXT NOT NULL CHECK(metodo_pagamento IN ('Cartão','Pix','Boleto')),
+    status TEXT NOT NULL CHECK(status IN ('Aprovado','Pendente','Cancelado')),
+    valor REAL NOT NULL CHECK(valor >= 0),
+    data_pagamento DATETIME,
+
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
+);
+
+CREATE INDEX idx_pagamentos_metodo ON pagamentos(metodo_pagamento);
+CREATE INDEX idx_pagamentos_status ON pagamentos(status);
+CREATE INDEX idx_pagamentos_pedido ON pagamentos(id_pedido);
+
+
+-- =========================
+-- USUARIOS ADMIN
+-- =========================
+CREATE TABLE usuarios_admin (
+    id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT CHECK(nome <> ''),
+    email TEXT UNIQUE NOT NULL CHECK(email LIKE '%@%'),
+    senha TEXT NOT NULL CHECK(length(senha) >= 6),
+    nivel_acesso TEXT NOT NULL CHECK(nivel_acesso IN ('super','gerente','suporte'))
+);
+
+CREATE INDEX idx_admin_nome ON usuarios_admin(nome);
+CREATE INDEX idx_admin_email ON usuarios_admin(email);
+CREATE INDEX idx_admin_nivel ON usuarios_admin(nivel_acesso);
+
+-- CLIENTES
+INSERT INTO clientes (nome, email, telefone, senha, data_nascimento) VALUES
+('João Silva','joao@email.com','11999990001','123456','2000-05-10'),
+('Maria Souza','maria@email.com','11999990002','123456','1998-02-15'),
+('Carlos Lima','carlos@email.com','11999990003','123456','1995-08-22'),
+('Ana Costa','ana@email.com','11999990004','123456','2001-01-05'),
+('Pedro Alves','pedro@email.com','11999990005','123456','1999-11-11'),
+('Lucas Martins','lucas@email.com','11999990006','123456','2002-07-19'),
+('Fernanda Rocha','fernanda@email.com','11999990007','123456','1997-09-03'),
+('Juliana Melo','juliana@email.com','11999990008','123456','2000-12-12'),
+('Bruno Gomes','bruno@email.com','11999990009','123456','1996-03-20'),
+('Ricardo Dias','ricardo@email.com','11999990010','123456','1994-06-18'),
+('Patricia Ramos','patricia@email.com','11999990011','123456','1993-04-09'),
+('Rafael Oliveira','rafael@email.com','11999990012','123456','1999-10-10'),
+('Beatriz Nunes','beatriz@email.com','11999990013','123456','2001-05-14'),
+('Gabriel Pinto','gabriel@email.com','11999990014','123456','2003-02-21'),
+('Larissa Castro','larissa@email.com','11999990015','123456','1998-07-30');
+
+-- CATEGORIAS
+INSERT INTO categorias (nome, descricao) VALUES
+('Camisetas','Camisetas masculinas e femininas'),
+('Calças','Calças jeans e sociais'),
+('Tênis','Calçados esportivos'),
+('Bonés','Bonés estilosos'),
+('Jaquetas','Jaquetas de inverno'),
+('Shorts','Shorts esportivos'),
+('Vestidos','Vestidos femininos'),
+('Blusas','Blusas diversas'),
+('Moletom','Moletons confortáveis'),
+('Camisas','Camisas sociais'),
+('Sandálias','Sandálias femininas'),
+('Sapatos','Sapatos sociais'),
+('Acessórios','Itens de moda'),
+('Meias','Meias esportivas'),
+('Óculos','Óculos de sol');
+
+-- FORNECEDORES
+INSERT INTO fornecedores (nome_empresa, cnpj, telefone, email) VALUES
+('Moda Brasil','11111111000101','1130000001','contato@modabrasil.com'),
+('Fashion Store','11111111000102','1130000002','contato@fashionstore.com'),
+('Top Roupas','11111111000103','1130000003','contato@toproupas.com'),
+('Urban Style','11111111000104','1130000004','contato@urbanstyle.com'),
+('Street Wear','11111111000105','1130000005','contato@streetwear.com'),
+('Mega Moda','11111111000106','1130000006','contato@megamoda.com'),
+('Trend Fashion','11111111000107','1130000007','contato@trend.com'),
+('Elite Roupas','11111111000108','1130000008','contato@elite.com'),
+('Brasil Vest','11111111000109','1130000009','contato@brasilvest.com'),
+('Fashion Group','11111111000110','1130000010','contato@fashiongroup.com'),
+('Style Company','11111111000111','1130000011','contato@style.com'),
+('Premium Moda','11111111000112','1130000012','contato@premium.com'),
+('Global Fashion','11111111000113','1130000013','contato@global.com'),
+('Nova Moda','11111111000114','1130000014','contato@novamoda.com'),
+('Look Perfeito','11111111000115','1130000015','contato@look.com');
+
+-- PRODUTOS
+INSERT INTO produtos (nome, descricao, id_categoria, id_fornecedor, preco, custo) VALUES
+('Camiseta Básica','Camiseta de algodão',1,1,49.90,20),
+('Calça Jeans','Calça jeans azul',2,2,120,60),
+('Tênis Esportivo','Tênis para corrida',3,3,250,150),
+('Boné Preto','Boné ajustável',4,4,39.90,15),
+('Jaqueta Couro','Jaqueta de couro sintético',5,5,300,180),
+('Shorts Academia','Short leve',6,6,59.90,25),
+('Vestido Floral','Vestido estampado',7,7,140,70),
+('Blusa Feminina','Blusa casual',8,8,79.90,35),
+('Moletom Capuz','Moletom quente',9,9,180,90),
+('Camisa Social','Camisa elegante',10,10,130,65),
+('Sandália Feminina','Sandália confortável',11,11,90,45),
+('Sapato Social','Sapato masculino',12,12,200,110),
+('Relógio','Relógio moderno',13,13,350,200),
+('Meia Esportiva','Par de meias',14,14,20,8),
+('Óculos de Sol','Óculos UV',15,15,160,80);
+
+-- ESTOQUE
+INSERT INTO estoque (id_produto, tamanho, cor, quantidade) VALUES
+(1,'M','Preto',50),
+(2,'42','Azul',20),
+(3,'40','Branco',15),
+(4,'U','Preto',60),
+(5,'G','Marrom',10),
+(6,'M','Cinza',35),
+(7,'P','Vermelho',25),
+(8,'M','Branco',30),
+(9,'G','Preto',18),
+(10,'M','Azul',22),
+(11,'37','Bege',14),
+(12,'42','Preto',16),
+(13,'U','Prata',12),
+(14,'U','Branco',100),
+(15,'U','Preto',40);
+
+-- PEDIDOS
+INSERT INTO pedidos (id_cliente, status, valor_total, data_cadastro) VALUES
+(1,'Pago',100,'2023-01-01 08:00:00'),
+(2,'Enviado',120,'2023-01-05 10:30:00'),
+(3,'Processando',250,'2023-01-10 14:20:00'),
+(4,'Pago',80,'2023-01-15 09:45:00'),
+(5,'Cancelado',50,'2023-01-20 11:10:00'),
+(6,'Pago',200,'2023-02-01 13:00:00'),
+(7,'Enviado',140,'2023-02-05 16:25:00'),
+(8,'Pago',60,'2023-02-10 18:40:00'),
+(9,'Processando',300,'2023-02-15 07:55:00'),
+(10,'Pago',130,'2023-02-20 12:15:00'),
+(11,'Pago',90,'2023-03-01 09:00:00'),
+(12,'Enviado',150,'2023-03-05 15:30:00'),
+(13,'Processando',220,'2023-03-10 17:45:00'),
+(14,'Pago',75,'2023-03-15 08:20:00'),
+(15,'Pago',180,'2023-03-20 19:10:00');
+
+-- ITENS PEDIDO
+INSERT INTO itens_pedido (id_pedido, id_produto, tamanho, cor, quantidade, preco_unitario) VALUES
+(1,1,'M','Preto',2,49.90),
+(2,2,'42','Azul',1,120),
+(3,3,'40','Branco',1,250),
+(4,4,'U','Preto',2,39.90),
+(5,6,'M','Cinza',1,59.90),
+(6,5,'G','Marrom',1,300),
+(7,7,'P','Vermelho',1,140),
+(8,6,'M','Cinza',1,59.90),
+(9,5,'G','Marrom',1,300),
+(10,10,'M','Azul',1,130),
+(11,11,'37','Bege',1,90),
+(12,12,'42','Preto',1,200),
+(13,3,'40','Branco',1,250),
+(14,1,'M','Preto',1,49.90),
+(15,9,'G','Preto',1,180);
+
+-- PAGAMENTOS
+INSERT INTO pagamentos (id_pedido, metodo_pagamento, status, valor) VALUES
+(1,'Cartão','Aprovado',100),
+(2,'Pix','Aprovado',120),
+(3,'Cartão','Pendente',250),
+(4,'Pix','Aprovado',80),
+(5,'Boleto','Cancelado',50),
+(6,'Cartão','Aprovado',200),
+(7,'Pix','Aprovado',140),
+(8,'Pix','Aprovado',60),
+(9,'Cartão','Pendente',300),
+(10,'Cartão','Aprovado',130),
+(11,'Pix','Aprovado',90),
+(12,'Boleto','Aprovado',150),
+(13,'Cartão','Pendente',220),
+(14,'Pix','Aprovado',75),
+(15,'Cartão','Aprovado',180);
+
+-- USUARIOS ADMIN
+INSERT INTO usuarios_admin (nome, email, senha, nivel_acesso) VALUES
+('Admin','admin@email.com','123456','super'),
+('Carlos Admin','carlos@admin.com','123456','gerente'),
+('Maria Admin','maria@admin.com','123456','gerente'),
+('João Admin','joao@admin.com','123456','suporte'),
+('Ana Admin','ana@admin.com','123456','suporte'),
+('Pedro Admin','pedro@admin.com','123456','suporte'),
+('Lucas Admin','lucas@admin.com','123456','suporte'),
+('Fernanda Admin','fernanda@admin.com','123456','gerente'),
+('Juliana Admin','juliana@admin.com','123456','suporte'),
+('Bruno Admin','bruno@admin.com','123456','suporte'),
+('Ricardo Admin','ricardo@admin.com','123456','suporte'),
+('Patricia Admin','patricia@admin.com','123456','suporte'),
+('Rafael Admin','rafael@admin.com','123456','suporte'),
+('Beatriz Admin','beatriz@admin.com','123456','suporte'),
+('Gabriel Admin','gabriel@admin.com','123456','suporte');
+
+
+--exercicio 1--
+SELECT *
+FROM pedidos
+WHERE status = 'Processando';
+--exercicio 2--
+SELECT id_pedido, valor_total, status
+FROM pedidos
+WHERE valor_total > 100;
+--exercicio 3--
+SELECT *
+FROM itens_pedido
+WHERE id_pedido = 1;
+--exercicio 4--
+SELECT *
+FROM pedidos
+WHERE id_cliente = 1;
+--exercicio 5--
+SELECT *
+FROM pedidos
+WHERE data_pedido BETWEEN '2025-06-01' AND '2025-06-03';
+--exercicio 6--
+UPDATE pedidos
+SET status = 'Entregue'
+WHERE id_pedido = 1;
+--exercicio 7--
+UPDATE pedidos
+SET valor_total = 950.00
+WHERE id_pedido = 2;
+--exercicio 8--
+UPDATE pedidos
+SET status = 'Retirada'
+WHERE id_pedido = 3;
+--exercicio 9--
+UPDATE pedidos
+SET status = 'Cancelado'
+WHERE status = 'Pendente';
+--exercicio 10--
+UPDATE itens_pedido
+SET quantidade = 3
+WHERE id_pedido = 1
+AND id_produto = 1;
+--exercicio 11--
+UPDATE itens_pedido
+SET preco_unitario = preco_unitario * 0.85
+WHERE id_pedido = 5;
+--exercicio 12--
+SELECT produtos.nome, categorias.nome
+FROM produtos
+JOIN categorias
+ON produtos.id_categoria = categorias.id_categoria;
+--exercicio 13--
+SELECT clientes.nome, pedidos.id_pedido, pedidos.valor_total
+FROM pedidos
+JOIN clientes
+ON pedidos.id_cliente = clientes.id_cliente;
+--exercicio 14--
+SELECT produtos.nome, itens_pedido.quantidade
+FROM itens_pedido
+JOIN produtos
+ON itens_pedido.id_produto = produtos.id_produto;
+--exercicio 15--
+SELECT produtos.nome, fornecedores.nome_empresa
+FROM produtos
+JOIN fornecedores
+ON produtos.id_fornecedor = fornecedores.id_fornecedor;
+--exercicio 16--
+SELECT clientes.nome, pedidos.id_pedido, pagamentos.status
+FROM pedidos
+JOIN clientes
+ON pedidos.id_cliente = clientes.id_cliente
+JOIN pagamentos
+ON pagamentos.id_pedido = pedidos.id_pedido;
+
+--FUNÇOES QUE FAZEM A ORDENAÇAO DOS DADOS --
+
+--EXERCICIO 17--
+SELECT * FROM clientes
+ORDER BY nome;
+
+--EXERCICIO 18--
+SELECT clientes.nome , produtos.preco
+FROM clientes , produtos
+ORDER BY preco DESC;
+	
+--EXERCICIO 19--    
+SELECT data_cadastro from pedidos
+ORDER BY data_cadastro
+
+--EXERCICIO 20--
+SELECT nome FROM usuarios_admin
+ORDER BY nome DESC;
+
+--EXERCICIO 21--
+SELECT nome , quantidade
+FROM produtos , estoque
+ORDER BY quantidade;
+
+--EXERCICIO 22--
+SELECT nome FROM clientes
+LIMIT 5 OFFSET 5
+
+--EXERCICIO 23--
+SELECT nome from clientes
+ORDER BY nome ASC
+LIMIT 3 OFFSET 2;
+
+--EXERCICIO 24--
+SELECT * from pedidos
+ORDER by data_pedido DESC
+limit 10;
+
+--EXERCICIO 25--
+SELECT nome_empresa from fornecedores
+ORDER by nome_empresa ASC
+LIMIT 4;
