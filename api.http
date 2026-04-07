@@ -1,0 +1,480 @@
+### =============================================
+### CLIENTES
+### =============================================
+
+### Listar todos os clientes
+GET http://localhost:3000/clientes
+
+###
+
+### Buscar cliente por nome
+GET http://localhost:3000/clientes?nome=João
+
+###
+
+### Buscar cliente por ID
+GET http://localhost:3000/clientes/1
+
+###
+
+### Criar cliente
+POST http://localhost:3000/clientes
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "email": "joao@email.com",
+  "telefone": "11999999999",
+  "senha": "senha123",
+  "data_nascimento": "1990-05-15"
+}
+
+###
+
+### Atualizar cliente
+PUT http://localhost:3000/clientes/1
+Content-Type: application/json
+
+{
+  "nome": "João Silva Atualizado",
+  "email": "joao.novo@email.com",
+  "telefone": "11988888888",
+  "senha": "novaSenha123",
+  "data_nascimento": "1990-05-15"
+}
+
+###
+
+### Deletar cliente
+DELETE http://localhost:3000/clientes/1
+
+
+### =============================================
+### CATEGORIAS
+### =============================================
+
+###
+
+### Listar todas as categorias
+GET http://localhost:3000/categorias
+
+###
+
+### Buscar categoria por nome
+GET http://localhost:3000/categorias?nome=Camisetas
+
+###
+
+### Buscar categoria por ID
+GET http://localhost:3000/categorias/1
+
+###
+
+### Criar categoria
+POST http://localhost:3000/categorias
+Content-Type: application/json
+
+{
+  "nome": "Camisetas",
+  "descricao": "Camisetas masculinas e femininas"
+}
+
+###
+
+### Atualizar categoria
+PUT http://localhost:3000/categorias/1
+Content-Type: application/json
+
+{
+  "nome": "Camisetas Premium",
+  "descricao": "Camisetas premium masculinas e femininas"
+}
+
+###
+
+### Deletar categoria
+DELETE http://localhost:3000/categorias/1
+
+
+### =============================================
+### FORNECEDORES
+### =============================================
+
+###
+
+### Listar todos os fornecedores
+GET http://localhost:3000/fornecedores
+
+###
+
+### Buscar fornecedor por nome
+GET http://localhost:3000/fornecedores?nome_empresa=Textil
+
+###
+
+### Buscar fornecedor por ID
+GET http://localhost:3000/fornecedores/1
+
+###
+
+### Criar fornecedor
+POST http://localhost:3000/fornecedores
+Content-Type: application/json
+
+{
+  "nome_empresa": "Têxtil Brasil Ltda",
+  "email": "contato@textilbrasil.com",
+  "telefone": "1132223333",
+  "cnpj": "12.345.678/0001-99"
+}
+
+###
+
+### Atualizar fornecedor
+PUT http://localhost:3000/fornecedores/1
+Content-Type: application/json
+
+{
+  "nome_empresa": "Têxtil Brasil S.A.",
+  "email": "novoemail@textilbrasil.com",
+  "telefone": "1132224444",
+  "cnpj": "12.345.678/0001-99"
+}
+
+###
+
+### Deletar fornecedor
+DELETE http://localhost:3000/fornecedores/1
+
+
+### =============================================
+### PRODUTOS
+### =============================================
+
+###
+
+### Listar todos os produtos
+GET http://localhost:3000/produtos
+
+###
+
+### Buscar produto por nome
+GET http://localhost:3000/produtos?nome=Camiseta
+
+###
+
+### Buscar produto por ID
+GET http://localhost:3000/produtos/1
+
+###
+
+### Criar produto
+POST http://localhost:3000/produtos
+Content-Type: application/json
+
+{
+  "nome": "Camiseta Branca Básica",
+  "descricao": "Camiseta 100% algodão",
+  "categoria_id": 1,
+  "fornecedor_id": 1,
+  "preco": 59.90,
+  "custo": 25.00,
+  "ativo": 1
+}
+
+###
+
+### Atualizar produto
+PUT http://localhost:3000/produtos/1
+Content-Type: application/json
+
+{
+  "nome": "Camiseta Branca Premium",
+  "descricao": "Camiseta 100% algodão penteado",
+  "categoria_id": 1,
+  "fornecedor_id": 1,
+  "preco": 79.90,
+  "custo": 30.00,
+  "ativo": 1
+}
+
+###
+
+### Deletar produto
+DELETE http://localhost:3000/produtos/1
+
+
+### =============================================
+### ESTOQUE
+### =============================================
+
+###
+
+### Listar todo o estoque
+GET http://localhost:3000/estoque
+
+###
+
+### Buscar estoque por produto
+GET http://localhost:3000/estoque?id_produto=1
+
+###
+
+### Buscar item de estoque por ID
+GET http://localhost:3000/estoque/1
+
+###
+
+### Criar item de estoque
+POST http://localhost:3000/estoque
+Content-Type: application/json
+
+{
+  "id_produto": 1,
+  "quantidade": 50,
+  "cor": "Branco",
+  "tamanho": "M"
+}
+
+###
+
+### Atualizar item de estoque
+PUT http://localhost:3000/estoque/1
+Content-Type: application/json
+
+{
+  "quantidade": 45,
+  "cor": "Branco",
+  "tamanho": "M"
+}
+
+###
+
+### Atualizar apenas a quantidade (PATCH)
+PATCH http://localhost:3000/estoque/1/quantidade
+Content-Type: application/json
+
+{
+  "quantidade": 30
+}
+
+###
+
+### Deletar item de estoque
+DELETE http://localhost:3000/estoque/1
+
+
+### =============================================
+### PEDIDOS
+### =============================================
+
+###
+
+### Listar todos os pedidos
+GET http://localhost:3000/pedidos
+
+###
+
+### Buscar pedidos por cliente
+GET http://localhost:3000/pedidos?id_cliente=1
+
+###
+
+### Buscar pedido por ID
+GET http://localhost:3000/pedidos/1
+
+###
+
+### Criar pedido
+POST http://localhost:3000/pedidos
+Content-Type: application/json
+
+{
+  "id_cliente": 1,
+  "valor_total": 119.80,
+  "data_pedido": "2024-01-15",
+  "status": "pendente"
+}
+
+###
+
+### Atualizar pedido
+PUT http://localhost:3000/pedidos/1
+Content-Type: application/json
+
+{
+  "valor_total": 139.80,
+  "data_pedido": "2024-01-15",
+  "status": "processando"
+}
+
+###
+
+### Atualizar status do pedido (PATCH)
+PATCH http://localhost:3000/pedidos/1/status
+Content-Type: application/json
+
+{
+  "status": "enviado"
+}
+
+###
+
+### Deletar pedido
+DELETE http://localhost:3000/pedidos/1
+
+
+### =============================================
+### ITENS DO PEDIDO
+### =============================================
+
+###
+
+### Listar todos os itens de pedido
+GET http://localhost:3000/itens-pedidos
+
+###
+
+### Buscar itens por pedido
+GET http://localhost:3000/itens-pedidos?id_pedido=1
+
+###
+
+### Buscar itens por produto
+GET http://localhost:3000/itens-pedidos?id_produto=1
+
+###
+
+### Buscar item de pedido por ID
+GET http://localhost:3000/itens-pedidos/1
+
+###
+
+### Criar item de pedido
+POST http://localhost:3000/itens-pedidos
+Content-Type: application/json
+
+{
+  "id_pedido": 1,
+  "id_produto": 1,
+  "tamanho": "M",
+  "cor": "Branco",
+  "quantidade": 2,
+  "preco_unitario": 59.90
+}
+
+###
+
+### Atualizar item de pedido
+PUT http://localhost:3000/itens-pedidos/1
+Content-Type: application/json
+
+{
+  "tamanho": "G",
+  "cor": "Preto",
+  "quantidade": 3,
+  "preco_unitario": 59.90
+}
+
+###
+
+### Deletar item de pedido
+DELETE http://localhost:3000/itens-pedidos/1
+
+
+### =============================================
+### PAGAMENTOS
+### =============================================
+
+###
+
+### Listar todos os pagamentos
+GET http://localhost:3000/pagamentos
+
+###
+
+### Buscar pagamentos por pedido
+GET http://localhost:3000/pagamentos?id_pedido=1
+
+###
+
+### Buscar pagamento por ID
+GET http://localhost:3000/pagamentos/1
+
+###
+
+### Criar pagamento
+POST http://localhost:3000/pagamentos
+Content-Type: application/json
+
+{
+  "id_pedido": 1,
+  "valor": 119.80,
+  "data_pagamento": "2024-01-15",
+  "metodo_pagamento": "cartao_credito",
+  "status": "aprovado"
+}
+
+###
+
+### Atualizar pagamento
+PUT http://localhost:3000/pagamentos/1
+Content-Type: application/json
+
+{
+  "valor": 119.80,
+  "data_pagamento": "2024-01-15",
+  "metodo_pagamento": "pix",
+  "status": "aprovado"
+}
+
+###
+
+### Deletar pagamento
+DELETE http://localhost:3000/pagamentos/1
+
+
+### =============================================
+### USUÁRIOS ADMIN
+### =============================================
+
+###
+
+### Listar todos os usuários admin
+GET http://localhost:3000/usuarios-admin
+
+###
+
+### Buscar usuário admin por ID
+GET http://localhost:3000/usuarios-admin/1
+
+###
+
+### Criar usuário admin
+POST http://localhost:3000/usuarios-admin
+Content-Type: application/json
+
+{
+  "nome": "Admin Master",
+  "email": "admin@loja.com",
+  "senha": "admin123",
+  "nivel_acesso": "super_admin"
+}
+
+###
+
+### Atualizar usuário admin
+PUT http://localhost:3000/usuarios-admin/1
+Content-Type: application/json
+
+{
+  "nome": "Admin Atualizado",
+  "email": "admin.novo@loja.com",
+  "senha": "novaSenha456",
+  "nivel_acesso": "admin"
+}
+
+###
+
+### Deletar usuário admin
+DELETE http://localhost:3000/usuarios-admin/1
